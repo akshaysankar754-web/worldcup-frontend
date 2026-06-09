@@ -1,0 +1,67 @@
+<nav class="navbar navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Admin Dashboard</span>
+    <button class="btn btn-outline-light" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div *ngIf="message" class="alert alert-info">{{ message }}</div>
+
+  <div class="row">
+    <!-- Add Team Section -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4>Add Team</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="teamForm" (ngSubmit)="onAddTeam()">
+            <div class="mb-3">
+              <label for="teamName" class="form-label">Team Name</label>
+              <input type="text" id="teamName" class="form-control" formControlName="teamName">
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="teamForm.invalid">Add Team</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team List Section -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h4>Team List</h4>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let team of teams">{{ team.teamName }}</li>
+          <li class="list-group-item" *ngIf="teams.length === 0">No teams added yet.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="row mt-4">
+    <div class="col-12 text-center mb-4">
+      <button class="btn btn-warning btn-lg" (click)="onRevealResult()" [disabled]="resultVisible">
+        Reveal Result
+      </button>
+    </div>
+
+    <div class="col-12" *ngIf="resultVisible">
+      <div class="card shadow-sm border-warning">
+        <div class="card-header bg-warning text-dark">
+          <h4>Poll Results</h4>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let res of results">
+            {{ res.teamName }}
+            <span class="badge bg-primary rounded-pill">{{ res.totalVotes }} Votes</span>
+          </li>
+          <li class="list-group-item" *ngIf="results.length === 0">No votes cast yet.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
