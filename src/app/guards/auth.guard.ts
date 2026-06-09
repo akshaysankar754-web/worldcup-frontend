@@ -18,12 +18,7 @@ export class AuthGuard implements CanActivate {
     if (roles) {
       const userRole = this.authService.getRole();
       if (!userRole || !roles.includes(userRole)) {
-        // Redirect to appropriate dashboard based on role
-        if (userRole === 'Admin') {
-            this.router.navigate(['/admin-dashboard']);
-        } else {
-            this.router.navigate(['/user-dashboard']);
-        }
+        this.authService.logout();
         return false;
       }
     }

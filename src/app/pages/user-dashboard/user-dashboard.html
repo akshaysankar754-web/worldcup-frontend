@@ -1,30 +1,74 @@
-<nav class="navbar navbar-dark bg-primary mb-4">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">User Dashboard</span>
-    <div>
-        <a class="btn btn-outline-light me-2" routerLink="/results">View Results</a>
-        <button class="btn btn-light" (click)="logout()">Logout</button>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-5">
+  <div class="container-fluid max-w-custom justify-content-end">
+    
+    <div class="d-flex align-items-center gap-3">
+        <a class="btn btn-outline-light px-4 rounded-pill fw-medium" routerLink="/results">View Results</a>
+
+        <!-- User Profile Dropdown -->
+        <div class="position-relative" *ngIf="userInfo">
+          <button class="btn btn-light text-primary fw-bold p-0 rounded-circle shadow-sm d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;" (click)="toggleProfileMenu()">
+            <span style="font-size: 16px;">
+              {{ userInfo.name.charAt(0).toUpperCase() }}
+            </span>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showProfileMenu" class="position-absolute end-0 mt-2 bg-white rounded-4 shadow-lg border p-3" style="width: 250px; z-index: 1000;">
+            <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+              <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center fw-bold fs-4" style="width: 50px; height: 50px;">
+                {{ userInfo.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="overflow-hidden">
+                <h6 class="mb-0 fw-bold text-dark text-truncate">{{ userInfo.name }}</h6>
+                <small class="text-muted text-truncate d-block">{{ userInfo.email }}</small>
+              </div>
+            </div>
+            <button class="btn btn-outline-danger w-100 rounded-pill fw-bold d-flex align-items-center justify-content-center" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        </div>
     </div>
   </div>
 </nav>
 
-<div class="container">
-  <div *ngIf="message" class="alert alert-info">{{ message }}</div>
+<div class="container max-w-custom">
+  <div *ngIf="message" class="alert alert-info rounded-3 text-center mb-4 border-0 shadow-sm">{{ message }}</div>
 
   <div class="row justify-content-center">
     <div class="col-md-8">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4>Vote for your Team</h4>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let team of teams">
-            {{ team.teamName }}
-            <button class="btn btn-success btn-sm" (click)="vote(team.id)">Vote</button>
-          </li>
-          <li class="list-group-item" *ngIf="teams.length === 0">No teams available for voting.</li>
-        </ul>
+      
+      <!-- When poll is closed -->
+      <div class="card premium-card text-center p-5" *ngIf="!pollOpen">
+         <h3 class="fw-bold mb-2">Voting is Closed</h3>
+         <p class="text-muted fs-5 fw-medium mb-0">Please wait for the admin to officially open the poll.</p>
       </div>
+
+      <!-- When poll is open -->
+      <div class="card premium-card" *ngIf="pollOpen">
+        <div class="card-header text-center border-0 pt-4 pb-0">
+          <h4 class="fw-bold mb-1">Vote for your Team</h4>
+          <p class="text-muted small">Select the team you want to win</p>
+        </div>
+        <div class="card-body p-4 p-sm-5">
+          <div class="list-group list-group-flush gap-3">
+            <div class="list-group-item d-flex justify-content-between align-items-center border rounded-3 p-3 shadow-sm bg-white" *ngFor="let team of teams | slice:(page-1)*pageSize:page*pageSize">
+              <span class="fw-semibold text-dark fs-5">{{ team.teamName }}</span>
+              <button class="btn btn-success px-4 rounded-pill fw-medium" (click)="vote(team.id)">Vote Now</button>
+            </div>
+            <div class="text-center text-muted py-5 bg-light rounded-3 border" *ngIf="teams.length === 0">
+              <p class="mb-0 fw-medium">No teams available for voting yet.</p>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="teams.length > pageSize">
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="prevPage()" [disabled]="page === 1">Previous</button>
+            <span class="text-muted fw-medium small">Page {{ page }} of {{ totalPages }}</span>
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+          </div>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>

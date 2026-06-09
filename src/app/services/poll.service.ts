@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class PollService {
-  private apiUrl = 'http://localhost:5000/api/Poll';
+  private apiUrl = 'http://localhost:5084/api/Poll';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -19,5 +19,17 @@ export class PollService {
 
   vote(teamId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/vote`, { teamId }, { headers: this.getHeaders() });
+  }
+
+  openPoll(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/open`, {}, { headers: this.getHeaders() });
+  }
+
+  closePoll(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/close`, {}, { headers: this.getHeaders() });
+  }
+
+  getPollStatus(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/status`);
   }
 }

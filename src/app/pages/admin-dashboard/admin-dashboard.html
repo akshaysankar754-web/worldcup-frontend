@@ -1,67 +1,111 @@
-<nav class="navbar navbar-dark bg-dark mb-4">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Admin Dashboard</span>
-    <button class="btn btn-outline-light" (click)="logout()">Logout</button>
+<div class="container max-w-custom py-4">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="bg-light p-1 rounded-pill d-inline-flex border">
+      <button class="btn rounded-pill px-4 fw-medium" [class.btn-primary]="activeTab === 'teams'" [class.btn-light]="activeTab !== 'teams'" [class.border-0]="activeTab !== 'teams'" (click)="activeTab = 'teams'; message = ''">Teams</button>
+      <button class="btn rounded-pill px-4 fw-medium" [class.btn-primary]="activeTab === 'poll'" [class.btn-light]="activeTab !== 'poll'" [class.border-0]="activeTab !== 'poll'" (click)="activeTab = 'poll'; message = ''">Poll Controls</button>
+      <button class="btn rounded-pill px-4 fw-medium" [class.btn-primary]="activeTab === 'results'" [class.btn-light]="activeTab !== 'results'" [class.border-0]="activeTab !== 'results'" (click)="activeTab = 'results'; message = ''">Results</button>
+    </div>
+    <button class="btn btn-outline-danger px-4 rounded-pill fw-medium" (click)="logout()">Logout</button>
   </div>
-</nav>
 
-<div class="container">
-  <div *ngIf="message" class="alert alert-info">{{ message }}</div>
+  <div *ngIf="message" class="alert alert-info rounded-3 text-center mb-4 border-0 fw-medium">{{ message }}</div>
 
-  <div class="row">
-    <!-- Add Team Section -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4>Add Team</h4>
+  <!-- Tab Content: Teams -->
+  <div class="row g-4 justify-content-center" *ngIf="activeTab === 'teams'">
+    <div class="col-md-5">
+      <div class="card premium-card h-100">
+        <div class="card-header text-center border-0 pt-4 pb-0">
+          <h4 class="fw-bold mb-1">Add Team</h4>
+          <p class="text-muted small">Register a new team</p>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
           <form [formGroup]="teamForm" (ngSubmit)="onAddTeam()">
-            <div class="mb-3">
-              <label for="teamName" class="form-label">Team Name</label>
-              <input type="text" id="teamName" class="form-control" formControlName="teamName">
+            <div class="mb-4">
+              <label for="teamName" class="form-label fw-medium text-secondary mb-2">Team Name</label>
+              <input type="text" id="teamName" class="form-control bg-light" formControlName="teamName">
             </div>
-            <button type="submit" class="btn btn-primary" [disabled]="teamForm.invalid">Add Team</button>
+            <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill" [disabled]="teamForm.invalid">Add Team</button>
           </form>
         </div>
       </div>
     </div>
-
-    <!-- Team List Section -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">
-          <h4>Team List</h4>
+    <div class="col-md-7">
+      <div class="card premium-card h-100">
+        <div class="card-header border-0 pt-4 pb-2 px-4">
+          <h4 class="fw-bold mb-0">Registered Teams</h4>
         </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item" *ngFor="let team of teams">{{ team.teamName }}</li>
-          <li class="list-group-item" *ngIf="teams.length === 0">No teams added yet.</li>
-        </ul>
+        <div class="card-body p-4 pt-2">
+          <div class="list-group gap-2">
+            <div class="list-group-item border rounded-3 p-3 text-dark fw-semibold shadow-sm bg-white" *ngFor="let team of teams | slice:(teamsPage-1)*pageSize:teamsPage*pageSize">
+              {{ team.teamName }}
+            </div>
+            <div class="text-center text-muted py-5 border rounded-3 bg-light" *ngIf="teams.length === 0">
+              <p class="mb-0 fw-medium">No teams added yet.</p>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="teams.length > pageSize">
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="prevTeamsPage()" [disabled]="teamsPage === 1">Previous</button>
+            <span class="text-muted fw-medium small">Page {{ teamsPage }} of {{ totalTeamsPages }}</span>
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="nextTeamsPage()" [disabled]="teamsPage === totalTeamsPages">Next</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Results Section -->
-  <div class="row mt-4">
-    <div class="col-12 text-center mb-4">
-      <button class="btn btn-warning btn-lg" (click)="onRevealResult()" [disabled]="resultVisible">
-        Reveal Result
+  <!-- Tab Content: Poll Controls -->
+  <div class="row justify-content-center" *ngIf="activeTab === 'poll'">
+    <div class="col-md-8">
+      <div class="card border text-center p-5 rounded-4 shadow-sm">
+        <h4 class="fw-bold mb-3">Poll Status: <span [ngClass]="pollOpen ? 'text-success' : 'text-danger'">{{ pollOpen ? 'OPEN' : 'CLOSED' }}</span></h4>
+        <p class="text-muted mb-4">Users can only vote when the poll is open.</p>
+        
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-success px-5 rounded-pill fw-medium" *ngIf="!pollOpen" (click)="onOpenPoll()">Open Poll</button>
+          <button class="btn btn-danger px-5 rounded-pill fw-medium" *ngIf="pollOpen" (click)="onClosePoll()">Close Poll</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Content: Results -->
+  <div class="row justify-content-center" *ngIf="activeTab === 'results'">
+    <div class="col-md-8 text-center mb-4">
+      <button *ngIf="!resultVisible" class="btn btn-warning px-5 py-2 rounded-pill fw-bold shadow-sm" (click)="onRevealResult()">
+        Reveal Results to Users
+      </button>
+      <button *ngIf="resultVisible" class="btn btn-danger px-5 py-2 rounded-pill fw-bold shadow-sm" (click)="onHideResult()">
+        Hide Results from Users
       </button>
     </div>
 
-    <div class="col-12" *ngIf="resultVisible">
-      <div class="card shadow-sm border-warning">
-        <div class="card-header bg-warning text-dark">
-          <h4>Poll Results</h4>
+    <div class="col-md-8">
+      <div class="card border rounded-4 shadow-sm">
+        <div class="card-header bg-transparent pt-4 pb-2 border-0 px-4">
+          <h5 class="fw-bold text-dark mb-0">Current Standings</h5>
         </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let res of results">
-            {{ res.teamName }}
-            <span class="badge bg-primary rounded-pill">{{ res.totalVotes }} Votes</span>
-          </li>
-          <li class="list-group-item" *ngIf="results.length === 0">No votes cast yet.</li>
-        </ul>
+        <div class="card-body p-4 p-sm-5">
+          <div class="list-group gap-3">
+            <div class="list-group-item d-flex justify-content-between align-items-center border rounded-3 p-4 shadow-sm bg-white" *ngFor="let res of results | slice:(resultsPage-1)*pageSize:resultsPage*pageSize; let i = index">
+              <span class="fw-bold text-dark fs-5">
+                <span class="text-muted me-3">#{{ (resultsPage - 1) * pageSize + i + 1 }}</span> {{ res.teamName }}
+              </span>
+              <span class="badge bg-primary rounded-pill px-4 py-2 fs-6 shadow-sm">{{ res.totalVotes }} Votes</span>
+            </div>
+            <div class="text-center text-muted py-5 border rounded-3 bg-light" *ngIf="results.length === 0">
+              <p class="mb-0 fw-medium">No votes cast yet.</p>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="results.length > pageSize">
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="prevResultsPage()" [disabled]="resultsPage === 1">Previous</button>
+            <span class="text-muted fw-medium small">Page {{ resultsPage }} of {{ totalResultsPages }}</span>
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="nextResultsPage()" [disabled]="resultsPage === totalResultsPages">Next</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
 </div>

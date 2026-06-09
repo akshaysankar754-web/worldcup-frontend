@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class ResultService {
-  private apiUrl = 'http://localhost:5000/api/Result';
+  private apiUrl = 'http://localhost:5084/api/Result';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -19,6 +19,10 @@ export class ResultService {
 
   revealResult(): Observable<any> {
     return this.http.post(`${this.apiUrl}/reveal`, {}, { headers: this.getHeaders() });
+  }
+
+  hideResult(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/hide`, {}, { headers: this.getHeaders() });
   }
 
   getResults(): Observable<any[]> {

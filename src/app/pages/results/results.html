@@ -1,32 +1,53 @@
-<nav class="navbar navbar-dark bg-dark mb-4">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Poll Results</span>
-    <a class="btn btn-outline-light" routerLink="/user-dashboard">Back to Dashboard</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-5 px-4 py-3">
+  <div class="container-fluid max-w-custom">
+    <span class="navbar-brand mb-0 h1 fw-bold text-primary">Poll Results</span>
+    <a class="btn btn-outline-primary px-4 rounded-pill fw-medium" routerLink="/user-dashboard">Back to Dashboard</a>
   </div>
 </nav>
 
-<div class="container">
+<div class="container max-w-custom pb-5">
   <div class="row justify-content-center">
     <div class="col-md-8">
-      <div *ngIf="message" class="alert alert-warning text-center">
-        <h4>{{ message }}</h4>
+      
+      <div *ngIf="message" class="card premium-card text-center p-5 mb-4 border-0">
+        <h4 class="text-muted fw-semibold mb-0">{{ message }}</h4>
       </div>
 
-      <div class="card shadow-sm border-warning" *ngIf="!message && results.length > 0">
-        <div class="card-header bg-warning text-dark text-center">
-          <h3>Current Rankings</h3>
+      <div class="card premium-card border-0" *ngIf="!message && results.length > 0">
+        <div class="card-header bg-transparent text-center border-0 pt-4 pb-0">
+          <h3 class="fw-bold text-dark mb-1">Final Rankings</h3>
         </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let res of results; let i = index">
-            <span><strong>#{{ i + 1 }}</strong> {{ res.teamName }}</span>
-            <span class="badge bg-primary rounded-pill" style="font-size: 1.1em;">{{ res.totalVotes }} Votes</span>
-          </li>
-        </ul>
+        <div class="card-body p-4 p-sm-5">
+          <div class="list-group gap-3">
+            <div class="list-group-item d-flex justify-content-between align-items-center border rounded-3 p-4 shadow-sm bg-white" 
+                 *ngFor="let res of results | slice:(page-1)*pageSize:page*pageSize; let i = index">
+              
+              <span class="fw-bold text-dark fs-5 d-flex align-items-center gap-3">
+                <span class="fs-4 text-muted">#{{ (page-1)*pageSize+i + 1 }}</span> 
+                {{ res.teamName }}
+              </span>
+              <span class="badge bg-primary rounded-pill px-4 py-2 fs-6 shadow-sm">
+                {{ res.totalVotes }} Votes
+              </span>
+            </div>
+            
+            <div class="text-center text-muted py-5 border rounded-3 bg-light" *ngIf="results.length === 0">
+              <p class="mb-0 fw-medium">No results available yet. Check back later!</p>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="results.length > pageSize">
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="prevPage()" [disabled]="page === 1">Previous</button>
+            <span class="text-muted fw-medium small">Page {{ page }} of {{ totalPages }}</span>
+            <button class="btn btn-outline-secondary rounded-pill px-3 btn-sm fw-medium" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+          </div>
+        </div>
       </div>
       
-      <div class="alert alert-info text-center" *ngIf="!message && results.length === 0">
-         No votes have been cast yet.
+      <div class="card premium-card text-center p-5 border-0" *ngIf="!message && results.length === 0">
+         <p class="text-muted fs-5 fw-medium mb-0">No votes have been cast yet.</p>
       </div>
+
     </div>
   </div>
 </div>

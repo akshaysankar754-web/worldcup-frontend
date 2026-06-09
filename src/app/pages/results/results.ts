@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResultService } from '../../services/result.service';
 import { RouterModule } from '@angular/router';
@@ -14,7 +14,22 @@ export class ResultsComponent implements OnInit {
   results: any[] = [];
   message: string = '';
 
-  constructor(private resultService: ResultService) {}
+  page: number = 1;
+  pageSize: number = 5;
+
+  get totalPages(): number {
+    return Math.ceil(this.results.length / this.pageSize) || 1;
+  }
+
+  nextPage() {
+    if (this.page < this.totalPages) { this.page++; this.cdr.detectChanges(); }
+  }
+
+  prevPage() {
+    if (this.page > 1) { this.page--; this.cdr.detectChanges(); }
+  }
+
+  constructor(private resultService: ResultService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadResults();
@@ -22,9 +37,10 @@ export class ResultsComponent implements OnInit {
 
   loadResults() {
     this.resultService.getResults().subscribe({
-      next: (data) => this.results = data,
+      next: (data) => { this.results = data; this.cdr.detectChanges(); },
       error: (err) => {
         this.message = err.error?.message || 'Error loading results.';
+        this.cdr.detectChanges();
       }
     });
   }

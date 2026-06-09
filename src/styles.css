@@ -1,1 +1,73 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-card {
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.05) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.max-w-custom {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.btn-primary, .btn-success {
+  background-color: #4361ee !important;
+  border-color: #4361ee !important;
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+  padding: 12px 24px !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover, .btn-success:hover {
+  background-color: #3f37c9 !important;
+  border-color: #3f37c9 !important;
+  box-shadow: 0 8px 20px rgba(67, 97, 238, 0.2) !important;
+}
+
+.form-control {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  padding: 14px 18px !important;
+  border: 1px solid #e2e8f0 !important;
+  transition: all 0.3s ease !important;
+  background-color: #f8fafc !important;
+}
+
+.form-control:focus {
+  border-color: #4361ee !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important;
+}
+
+.card-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+  padding: 25px 25px 15px 25px !important;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.text-primary {
+  color: #4361ee !important;
+}

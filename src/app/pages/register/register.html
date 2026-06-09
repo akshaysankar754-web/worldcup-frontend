@@ -1,37 +1,38 @@
-<div class="container mt-5">
+<div class="container mt-5 pt-4 mb-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-header bg-success text-white text-center">
+    <div class="col-md-5">
+      <div class="card premium-card">
+        <div class="card-header text-center">
           <h3>Register</h3>
         </div>
-        <div class="card-body">
-          <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-          <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+        <div class="card-body p-4 p-sm-5">
+          <div *ngIf="errorMessage" class="alert alert-danger rounded-3">{{ errorMessage }}</div>
+          <div *ngIf="successMessage" class="alert alert-success rounded-3">{{ successMessage }}</div>
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
-              <label for="name" class="form-label">Name</label>
+              <label for="name" class="form-label fw-medium text-secondary mb-1">Full Name</label>
               <input type="text" id="name" class="form-control" formControlName="name">
             </div>
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
+              <label for="email" class="form-label fw-medium text-secondary mb-1">Email Address</label>
               <input type="email" id="email" class="form-control" formControlName="email">
             </div>
             <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
+              <label for="password" class="form-label fw-medium text-secondary mb-1">Password</label>
               <input type="password" id="password" class="form-control" formControlName="password">
             </div>
-            <div class="mb-3">
-              <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label fw-medium text-secondary mb-1">Confirm Password</label>
               <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword">
-              <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched" class="text-danger">
+              <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched" class="text-danger small mt-2">
                 Passwords must match.
               </div>
             </div>
-            <button type="submit" class="btn btn-success w-100" [disabled]="registerForm.invalid">Register</button>
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3 mt-2" [disabled]="registerForm.invalid">Create Account</button>
           </form>
-          <div class="mt-3 text-center">
-            <a routerLink="/login">Login</a>
+          <div class="text-center mt-4 pt-2 border-top">
+            <span class="text-muted">Already have an account? </span>
+            <a routerLink="/login" class="text-decoration-none fw-semibold text-primary">Sign in</a>
           </div>
         </div>
       </div>

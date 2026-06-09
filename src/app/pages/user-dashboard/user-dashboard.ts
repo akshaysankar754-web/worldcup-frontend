@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeamService } from '../../services/team.service';
 import { PollService } from '../../services/poll.service';
@@ -15,34 +15,77 @@ import { Router, RouterModule } from '@angular/router';
 export class UserDashboardComponent implements OnInit {
   teams: any[] = [];
   message: string = '';
+  pollOpen: boolean = false;
+
+  page: number = 1;
+  pageSize: number = 5;
+  userInfo: any = null;
+  showProfileMenu: boolean = false;
+
+  get totalPages(): number {
+    return Math.ceil(this.teams.length / this.pageSize) || 1;
+  }
+
+  nextPage() {
+    if (this.page < this.totalPages) { this.page++; this.cdr.detectChanges(); }
+  }
+
+  prevPage() {
+    if (this.page > 1) { this.page--; this.cdr.detectChanges(); }
+  }
 
   constructor(
     private teamService: TeamService,
     private pollService: PollService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.userInfo = this.authService.getUserInfo();
+    this.checkPollStatus();
     this.loadTeams();
+  }
+
+  showMessage(msg: string) {
+    this.message = msg;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.message = '';
+      this.cdr.detectChanges();
+    }, 3000);
+  }
+
+  checkPollStatus() {
+    this.pollService.getPollStatus().subscribe({
+      next: (res) => {
+        this.pollOpen = res.pollOpen;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   loadTeams() {
     this.teamService.getTeams().subscribe({
-      next: (data) => this.teams = data,
-      error: (err) => console.error(err)
+      next: (data) => { this.teams = data; this.cdr.detectChanges(); },
+      error: (err) => { console.error(err); this.cdr.detectChanges(); }
     });
   }
 
   vote(teamId: number) {
     this.pollService.vote(teamId).subscribe({
       next: (res) => {
-        this.message = res.message;
+        this.showMessage(res.message);
       },
       error: (err) => {
-        this.message = err.error?.message || 'Error submitting vote.';
+        this.showMessage(err.error?.message || 'Error submitting vote.');
       }
     });
+  }
+
+  toggleProfileMenu() {
+    this.showProfileMenu = !this.showProfileMenu;
   }
 
   logout() {
