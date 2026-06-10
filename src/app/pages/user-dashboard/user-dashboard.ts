@@ -19,19 +19,9 @@ export class UserDashboardComponent implements OnInit {
 
   page: number = 1;
   pageSize: number = 5;
-  userInfo: any = null;
-  showProfileMenu: boolean = false;
 
   get totalPages(): number {
     return Math.ceil(this.teams.length / this.pageSize) || 1;
-  }
-
-  nextPage() {
-    if (this.page < this.totalPages) { this.page++; this.cdr.detectChanges(); }
-  }
-
-  prevPage() {
-    if (this.page > 1) { this.page--; this.cdr.detectChanges(); }
   }
 
   constructor(
@@ -43,14 +33,28 @@ export class UserDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.userInfo = this.authService.getUserInfo();
     this.checkPollStatus();
     this.loadTeams();
+  }
+
+  nextPage() {
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.cdr.detectChanges();
+    }
+  }
+
+  prevPage() {
+    if (this.page > 1) {
+      this.page--;
+      this.cdr.detectChanges();
+    }
   }
 
   showMessage(msg: string) {
     this.message = msg;
     this.cdr.detectChanges();
+
     setTimeout(() => {
       this.message = '';
       this.cdr.detectChanges();
@@ -62,14 +66,23 @@ export class UserDashboardComponent implements OnInit {
       next: (res) => {
         this.pollOpen = res.pollOpen;
         this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
       }
     });
   }
 
   loadTeams() {
     this.teamService.getTeams().subscribe({
-      next: (data) => { this.teams = data; this.cdr.detectChanges(); },
-      error: (err) => { console.error(err); this.cdr.detectChanges(); }
+      next: (data) => {
+        this.teams = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -79,13 +92,11 @@ export class UserDashboardComponent implements OnInit {
         this.showMessage(res.message);
       },
       error: (err) => {
-        this.showMessage(err.error?.message || 'Error submitting vote.');
+        this.showMessage(
+          err.error?.message || 'Error submitting vote.'
+        );
       }
     });
-  }
-
-  toggleProfileMenu() {
-    this.showProfileMenu = !this.showProfileMenu;
   }
 
   logout() {
